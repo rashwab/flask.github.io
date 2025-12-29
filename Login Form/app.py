@@ -3,7 +3,7 @@ import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'
+app.secret_key = 'testing123'
 
 DATABASE = 'data.db'
 
@@ -35,10 +35,17 @@ def login():
         if user and check_password_hash(user['password'], password):
             session['user_id'] = user['id']
             session['username'] = user['username']
-            return f"Welcome, {session['username']}!"
+            return redirect(url_for('welcome'))
         else:
             return 'Invalid credentials!'
     return render_template('index.html')
+
+
+@app.route('/welcome')
+def welcome():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('welcome.html', username=session.get('username'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
